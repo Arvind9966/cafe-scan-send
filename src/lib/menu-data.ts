@@ -7,6 +7,11 @@ export interface MenuItem {
 }
 
 export const menuItems: MenuItem[] = [
+  // Combos
+  { id: "cb1", name: "OTC Pizza + Cold Coffee", price: 129, category: "Combos", emoji: "🍕☕" },
+  { id: "cb2", name: "Momo's Combo Platter (15 pcs)", price: 199, category: "Combos", emoji: "🥟🎉" },
+  { id: "cb3", name: "Aloo Tikki Burger + Coke", price: 59, category: "Combos", emoji: "🍔🥤" },
+
   // Rolls
   { id: "r1", name: "Veg. Roll", price: 50, category: "Rolls", emoji: "🌯" },
   { id: "r2", name: "Chowmein Roll", price: 60, category: "Rolls", emoji: "🥡" },
