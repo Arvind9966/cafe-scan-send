@@ -263,11 +263,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <ItemForm
                 key={item.id}
                 initial={{
-                  name: item.name,
+                  name: parseVariantFromName(item.name).baseName,
                   price: String(item.price),
                   category: item.category,
                   emoji: item.emoji,
                   available: item.available,
+                  variant: parseVariantFromName(item.name).variant,
                 }}
                 onSave={(data) => handleEdit(item.id, data)}
                 onCancel={() => setEditingId(null)}
