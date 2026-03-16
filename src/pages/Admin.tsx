@@ -101,8 +101,10 @@ function ItemForm({ initial, onSave, onCancel }: {
   const [form, setForm] = useState<ItemFormData>(initial || emptyForm);
 
   const handleCategoryChange = (cat: string) => {
-    setForm((f) => ({ ...f, category: cat, emoji: f.emoji || EMOJI_MAP[cat] || "🍽️" }));
+    setForm((f) => ({ ...f, category: cat, customCategory: cat === "Other" ? f.customCategory : "", emoji: f.emoji || (cat !== "Other" ? EMOJI_MAP[cat] || "🍽️" : "") }));
   };
+
+  const resolvedCategory = form.category === "Other" ? form.customCategory : form.category;
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 space-y-3">
