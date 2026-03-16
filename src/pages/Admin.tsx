@@ -278,7 +278,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 initial={{
                   name: parseVariantFromName(item.name).baseName,
                   price: String(item.price),
-                  category: item.category,
+                  category: CATEGORY_OPTIONS.includes(item.category) ? item.category : "Other",
+                  customCategory: CATEGORY_OPTIONS.includes(item.category) ? "" : item.category,
                   emoji: item.emoji,
                   available: item.available,
                   variant: parseVariantFromName(item.name).variant,
