@@ -128,15 +128,26 @@ function ItemForm({ initial, onSave, onCancel }: {
           className="w-20 px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/40"
         />
       </div>
-      <select
-        value={form.category}
-        onChange={(e) => handleCategoryChange(e.target.value)}
-        className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-      >
-        {CATEGORY_OPTIONS.map((c) => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
+      <div className="flex gap-2">
+        <select
+          value={form.category}
+          onChange={(e) => handleCategoryChange(e.target.value)}
+          className="flex-1 px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          {CATEGORY_OPTIONS.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+        <select
+          value={form.variant}
+          onChange={(e) => setForm((f) => ({ ...f, variant: e.target.value }))}
+          className="w-36 px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          {VARIANT_OPTIONS.map((v) => (
+            <option key={v.value} value={v.value}>{v.label}</option>
+          ))}
+        </select>
+      </div>
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-foreground">
           <input
