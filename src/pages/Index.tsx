@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Coffee } from "lucide-react";
+import { UtensilsCrossed } from "lucide-react";
 import { menuItems, categories } from "@/lib/menu-data";
 import { useCart } from "@/hooks/useCart";
 import MenuItemCard from "@/components/MenuItemCard";
@@ -28,8 +28,7 @@ export default function Index() {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4">
           <div className="flex items-center gap-2">
-            <Coffee size={20} className="text-primary" />
-            <h1 className="font-display text-2xl font-bold text-foreground">Café Menu</h1>
+            <h1 className="font-display text-2xl font-bold text-foreground">Lala Laaya Burger</h1>
           </div>
           <div className="inline-block mt-1 bg-primary/10 text-primary text-sm font-semibold px-3 py-1 rounded-full">
             Table #{tableNumber}

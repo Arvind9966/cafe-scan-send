@@ -58,7 +58,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
           <div className="space-y-2">
             {cartItems.map((item) => (
               <div key={item.id} className="flex justify-between py-2 border-b border-border last:border-0">
-                <span className="text-foreground">{item.emoji} {item.name} ×{item.quantity}</span>
+                <span className="text-foreground">{item.name} ×{item.quantity}</span>
                 <span className="font-semibold text-foreground">₹{item.price * item.quantity}</span>
               </div>
             ))}
