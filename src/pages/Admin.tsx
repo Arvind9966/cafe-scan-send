@@ -17,6 +17,16 @@ const EMOJI_MAP: Record<string, string> = {
   "Pasta": "🍝", "Dessert": "🍦", "Specials": "⭐", "Combos": "🎉",
 };
 
+const VARIANT_OPTIONS = [
+  { value: "", label: "No Variant" },
+  { value: "(S)", label: "Small (S)" },
+  { value: "(L)", label: "Large (L)" },
+  { value: "(H)", label: "Half (H)" },
+  { value: "(F)", label: "Full (F)" },
+  { value: "(M)", label: "Medium (M)" },
+  { value: "(Grilled)", label: "Grilled" },
+];
+
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
