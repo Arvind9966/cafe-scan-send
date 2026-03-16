@@ -74,12 +74,13 @@ export function groupMenuItems(items: MenuItem[]): GroupedMenuItem[] {
     const parsed = parseVariant(item.name);
     if (parsed) {
       const key = `${parsed.baseName}__${item.category}`;
-      if (!seen.has(key)) {
+      if (!seen.has(key) && groups.has(key)) {
         seen.add(key);
         result.push(groups.get(key)!);
       }
     } else {
-      result.push(standalone.find((s) => s.baseId === item.id)!);
+      const s = standalone.find((s) => s.baseId === item.id);
+      if (s) result.push(s);
     }
   }
 
