@@ -17,6 +17,16 @@ const EMOJI_MAP: Record<string, string> = {
   "Pasta": "🍝", "Dessert": "🍦", "Specials": "⭐", "Combos": "🎉",
 };
 
+const VARIANT_OPTIONS = [
+  { value: "", label: "No Variant" },
+  { value: "(S)", label: "Small (S)" },
+  { value: "(L)", label: "Large (L)" },
+  { value: "(H)", label: "Half (H)" },
+  { value: "(F)", label: "Full (F)" },
+  { value: "(M)", label: "Medium (M)" },
+  { value: "(Grilled)", label: "Grilled" },
+];
+
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -64,9 +74,23 @@ interface ItemFormData {
   category: string;
   emoji: string;
   available: boolean;
+  variant: string;
 }
 
-const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], emoji: "", available: true };
+const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], emoji: "", available: true, variant: "" };
+
+function parseVariantFromName(name: string): { baseName: string; variant: string } {
+  for (const opt of VARIANT_OPTIONS) {
+    if (opt.value && name.endsWith(` ${opt.value}`)) {
+      return { baseName: name.replace(` ${opt.value}`, ""), variant: opt.value };
+    }
+  }
+  return { baseName: name, variant: "" };
+}
+
+function buildNameWithVariant(baseName: string, variant: string): string {
+  return variant ? `${baseName} ${variant}` : baseName;
+}
 
 function ItemForm({ initial, onSave, onCancel }: {
   initial?: ItemFormData;
@@ -104,15 +128,26 @@ function ItemForm({ initial, onSave, onCancel }: {
           className="w-20 px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/40"
         />
       </div>
-      <select
-        value={form.category}
-        onChange={(e) => handleCategoryChange(e.target.value)}
-        className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-      >
-        {CATEGORY_OPTIONS.map((c) => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
+      <div className="flex gap-2">
+        <select
+          value={form.category}
+          onChange={(e) => handleCategoryChange(e.target.value)}
+          className="flex-1 px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          {CATEGORY_OPTIONS.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+        <select
+          value={form.variant}
+          onChange={(e) => setForm((f) => ({ ...f, variant: e.target.value }))}
+          className="w-36 px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          {VARIANT_OPTIONS.map((v) => (
+            <option key={v.value} value={v.value}>{v.label}</option>
+          ))}
+        </select>
+      </div>
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-foreground">
           <input
@@ -148,8 +183,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const filtered = filterCategory === "All" ? items : items.filter((i) => i.category === filterCategory);
 
   const handleAdd = (data: ItemFormData) => {
+    const finalName = buildNameWithVariant(data.name, data.variant);
     addItem({
-      name: data.name,
+      name: finalName,
       price: Number(data.price),
       category: data.category,
       emoji: data.emoji || EMOJI_MAP[data.category] || "🍽️",
@@ -159,8 +195,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   };
 
   const handleEdit = (id: string, data: ItemFormData) => {
+    const finalName = buildNameWithVariant(data.name, data.variant);
     updateItem(id, {
-      name: data.name,
+      name: finalName,
       price: Number(data.price),
       category: data.category,
       emoji: data.emoji || EMOJI_MAP[data.category] || "🍽️",
@@ -226,11 +263,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <ItemForm
                 key={item.id}
                 initial={{
-                  name: item.name,
+                  name: parseVariantFromName(item.name).baseName,
                   price: String(item.price),
                   category: item.category,
                   emoji: item.emoji,
                   available: item.available,
+                  variant: parseVariantFromName(item.name).variant,
                 }}
                 onSave={(data) => handleEdit(item.id, data)}
                 onCancel={() => setEditingId(null)}
@@ -245,9 +283,14 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 <span className="text-2xl flex-shrink-0">{item.emoji}</span>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-foreground text-sm truncate">{item.name}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <span className="text-primary font-bold text-sm">₹{item.price}</span>
                     <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">{item.category}</span>
+                    {parseVariantFromName(item.name).variant && (
+                      <span className="text-xs font-semibold text-accent-foreground bg-accent px-2 py-0.5 rounded-full">
+                        {VARIANT_OPTIONS.find(v => v.value === parseVariantFromName(item.name).variant)?.label || parseVariantFromName(item.name).variant}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
