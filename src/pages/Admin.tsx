@@ -72,6 +72,7 @@ interface ItemFormData {
   name: string;
   price: string;
   category: string;
+  customCategory: string;
   emoji: string;
   available: boolean;
   variant: string;
