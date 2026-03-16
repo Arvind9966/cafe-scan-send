@@ -7,6 +7,7 @@ const ADMIN_PASSWORD = "admin123";
 
 const CATEGORY_OPTIONS = [
   "Rolls", "French Fries", "Burger", "Momos", "Chowmein", "Pav Bhaji", "Maggi",
+  "Shakes", "Mojito", "Cold Coffees", "Sandwich", "Pizza", "Pasta", "Dessert", "Specials", "Combos",
 ];
 
 const EMOJI_MAP: Record<string, string> = {
