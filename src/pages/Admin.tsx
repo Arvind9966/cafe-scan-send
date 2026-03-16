@@ -283,9 +283,14 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 <span className="text-2xl flex-shrink-0">{item.emoji}</span>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-foreground text-sm truncate">{item.name}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <span className="text-primary font-bold text-sm">₹{item.price}</span>
                     <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">{item.category}</span>
+                    {parseVariantFromName(item.name).variant && (
+                      <span className="text-xs font-semibold text-accent-foreground bg-accent px-2 py-0.5 rounded-full">
+                        {VARIANT_OPTIONS.find(v => v.value === parseVariantFromName(item.name).variant)?.label || parseVariantFromName(item.name).variant}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
