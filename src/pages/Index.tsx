@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, X } from "lucide-react";
-import { menuItems, categories } from "@/lib/menu-data";
+import { getPublicMenu } from "@/hooks/useMenuStore";
 import { useCart } from "@/hooks/useCart";
 import MenuItemCard from "@/components/MenuItemCard";
 import CartBar from "@/components/CartBar";
@@ -16,13 +16,15 @@ export default function Index() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [search, setSearch] = useState("");
 
+  const { items: menuItems, categories } = getPublicMenu();
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const items = q ? menuItems.filter((i) => i.name.toLowerCase().includes(q)) : menuItems;
     return categories
       .map((cat) => ({ category: cat, items: items.filter((i) => i.category === cat) }))
       .filter((g) => g.items.length > 0);
-  }, [search]);
+  }, [search, menuItems, categories]);
 
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto pb-40">
