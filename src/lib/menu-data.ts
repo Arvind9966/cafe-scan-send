@@ -188,11 +188,6 @@ export const menuItems: MenuItem[] = [
   { id: "sp2", name: "Vada Pav", price: 40, category: "Specials", emoji: "🥔" },
   { id: "sp3", name: "Sweet Corn", price: 40, category: "Specials", emoji: "🌽" },
   { id: "sp4", name: "Hot Coffee", price: 30, category: "Specials", emoji: "☕" },
-
-  // Combos
-  { id: "cb1", name: "OTC Pizza + Cold Coffee", price: 129, category: "Combos", emoji: "🍕☕" },
-  { id: "cb2", name: "Momo's Combo Platter (15 pcs)", price: 199, category: "Combos", emoji: "🥟🎉" },
-  { id: "cb3", name: "Aloo Tikki Burger + Coke", price: 59, category: "Combos", emoji: "🍔🥤" },
 ];
 
 export const WHATSAPP_NUMBER = "918000702671"; // Replace with actual number
