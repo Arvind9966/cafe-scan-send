@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Coffee } from "lucide-react";
+import { UtensilsCrossed } from "lucide-react";
 import { menuItems, categories } from "@/lib/menu-data";
 import { useCart } from "@/hooks/useCart";
 import MenuItemCard from "@/components/MenuItemCard";

@@ -24,7 +24,7 @@ export default function CartBar({ cartItems, totalPrice, totalItems, onPlaceOrde
           <div className="mb-3 max-h-28 overflow-y-auto space-y-1">
             {cartItems.map((item) => (
               <div key={item.id} className="flex justify-between text-sm text-muted-foreground">
-                <span>{item.emoji} {item.name} ×{item.quantity}</span>
+                <span>{item.name} ×{item.quantity}</span>
                 <span className="font-medium text-foreground">₹{item.price * item.quantity}</span>
               </div>
             ))}
