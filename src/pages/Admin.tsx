@@ -176,7 +176,7 @@ function ItemForm({ initial, onSave, onCancel }: {
             <X size={16} />
           </button>
           <button
-            onClick={() => { if (form.name && form.price) onSave(form); }}
+            onClick={() => { if (form.name && form.price && (form.category !== "Other" || form.customCategory)) onSave({ ...form, category: form.category === "Other" ? form.customCategory : form.category, customCategory: "" }); }}
             className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold flex items-center gap-1.5 active:scale-95 transition-transform"
           >
             <Save size={16} /> Save
