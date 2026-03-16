@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { UtensilsCrossed } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { menuItems, categories } from "@/lib/menu-data";
 import { useCart } from "@/hooks/useCart";
 import MenuItemCard from "@/components/MenuItemCard";
@@ -14,11 +14,15 @@ export default function Index() {
   const tableNumber = searchParams.get("table") || "1";
   const { cartItems, totalPrice, totalItems, addItem, removeItem, getQuantity, clear } = useCart();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [search, setSearch] = useState("");
 
-  const grouped = useMemo(
-    () => categories.map((cat) => ({ category: cat, items: menuItems.filter((i) => i.category === cat) })),
-    []
-  );
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const items = q ? menuItems.filter((i) => i.name.toLowerCase().includes(q)) : menuItems;
+    return categories
+      .map((cat) => ({ category: cat, items: items.filter((i) => i.category === cat) }))
+      .filter((g) => g.items.length > 0);
+  }, [search]);
 
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto pb-40">
@@ -41,9 +45,31 @@ export default function Index() {
         <QuickActions tableNumber={tableNumber} />
       </div>
 
+      {/* Search */}
+      <div className="px-4 mt-4">
+        <div className="relative">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search menu..."
+            className="w-full pl-10 pr-10 py-3 rounded-lg border border-input bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <X size={18} />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Menu */}
       <div className="px-4 mt-6 space-y-6">
-        {grouped.map(({ category, items }) => (
+        {filtered.length === 0 && (
+          <p className="text-center text-muted-foreground py-8">No items found</p>
+        )}
+        {filtered.map(({ category, items }) => (
           <section key={category}>
             <h2 className="font-display text-lg font-bold text-foreground mb-3">{category}</h2>
             <div className="space-y-2">
