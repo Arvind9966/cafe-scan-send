@@ -86,6 +86,9 @@ export default function Index() {
           </section>
         ))}
       </div>
+
+      {/* Cart */}
+      <CartBar
         cartItems={cartItems}
         totalPrice={totalPrice}
         totalItems={totalItems}
