@@ -6,14 +6,14 @@ interface Props {
 }
 
 const actions = [
-  { label: "Call Waiter", icon: Bell, message: "🔔 Please send a waiter" },
-  { label: "Request Bill", icon: Receipt, message: "🧾 Please bring the bill" },
-  { label: "Need Water", icon: Droplets, message: "💧 Please bring water" },
+  { label: "Call Waiter", icon: Bell, message: "Please send a waiter" },
+  { label: "Request Bill", icon: Receipt, message: "Please bring the bill" },
+  { label: "Need Water", icon: Droplets, message: "Please bring water" },
 ];
 
 export default function QuickActions({ tableNumber }: Props) {
   const send = (msg: string) => {
-    const full = `${msg}\n🪑 Table: ${tableNumber}`;
+    const full = `${msg}\nTable: ${tableNumber}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(full)}`, "_blank");
   };
 
