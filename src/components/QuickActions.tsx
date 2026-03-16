@@ -6,9 +6,9 @@ interface Props {
 }
 
 const actions = [
-  { label: "Call Waiter", icon: Bell, message: "🔔 Please send a waiter" },
-  { label: "Request Bill", icon: Receipt, message: "🧾 Please bring the bill" },
-  { label: "Need Water", icon: Droplets, message: "💧 Please bring water" },
+  { label: "Call Waiter", icon: Bell, message: "Please send a waiter" },
+  { label: "Request Bill", icon: Receipt, message: "Please bring the bill" },
+  { label: "Need Water", icon: Droplets, message: "Please bring water" },
 ];
 
 export default function QuickActions({ tableNumber }: Props) {
