@@ -74,9 +74,23 @@ interface ItemFormData {
   category: string;
   emoji: string;
   available: boolean;
+  variant: string;
 }
 
-const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], emoji: "", available: true };
+const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], emoji: "", available: true, variant: "" };
+
+function parseVariantFromName(name: string): { baseName: string; variant: string } {
+  for (const opt of VARIANT_OPTIONS) {
+    if (opt.value && name.endsWith(` ${opt.value}`)) {
+      return { baseName: name.replace(` ${opt.value}`, ""), variant: opt.value };
+    }
+  }
+  return { baseName: name, variant: "" };
+}
+
+function buildNameWithVariant(baseName: string, variant: string): string {
+  return variant ? `${baseName} ${variant}` : baseName;
+}
 
 function ItemForm({ initial, onSave, onCancel }: {
   initial?: ItemFormData;
