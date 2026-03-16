@@ -17,7 +17,7 @@ export default function MenuItemCard({ item, quantity, onAdd, onRemove }: Props)
       className="flex items-center justify-between rounded-lg bg-card p-4 shadow-sm border border-border"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <span className="text-2xl flex-shrink-0">{item.emoji}</span>
+        <span className="text-lg font-bold text-primary flex-shrink-0">₹{item.price}</span>
         <div className="min-w-0">
           <p className="font-semibold text-card-foreground truncate">{item.name}</p>
           <p className="text-primary font-bold">₹{item.price}</p>
