@@ -183,8 +183,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const filtered = filterCategory === "All" ? items : items.filter((i) => i.category === filterCategory);
 
   const handleAdd = (data: ItemFormData) => {
+    const finalName = buildNameWithVariant(data.name, data.variant);
     addItem({
-      name: data.name,
+      name: finalName,
       price: Number(data.price),
       category: data.category,
       emoji: data.emoji || EMOJI_MAP[data.category] || "🍽️",
@@ -194,8 +195,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   };
 
   const handleEdit = (id: string, data: ItemFormData) => {
+    const finalName = buildNameWithVariant(data.name, data.variant);
     updateItem(id, {
-      name: data.name,
+      name: finalName,
       price: Number(data.price),
       category: data.category,
       emoji: data.emoji || EMOJI_MAP[data.category] || "🍽️",
