@@ -10,6 +10,7 @@ interface Props {
 }
 
 export default function MenuItemCard({ group, totalQuantity, onAdd, onRemove }: Props) {
+  if (!group?.variants) return null;
   const hasVariants = group.variants.length > 1;
 
   return (
