@@ -78,7 +78,7 @@ interface ItemFormData {
   variant: string;
 }
 
-const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], emoji: "", available: true, variant: "" };
+const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], customCategory: "", emoji: "", available: true, variant: "" };
 
 function parseVariantFromName(name: string): { baseName: string; variant: string } {
   for (const opt of VARIANT_OPTIONS) {
