@@ -19,6 +19,6 @@ export const menuItems: MenuItem[] = [
   { id: "10", name: "Ice Cream Sundae", price: 170, category: "Desserts", emoji: "🍨" },
 ];
 
-export const WHATSAPP_NUMBER = "91XXXXXXXXXX"; // Replace with actual number
+export const WHATSAPP_NUMBER = "918000702671"; // Replace with actual number
 
 export const categories = [...new Set(menuItems.map((item) => item.category))];
