@@ -140,6 +140,7 @@ function ItemForm({ initial, onSave, onCancel }: {
           {CATEGORY_OPTIONS.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
+          <option value="Other">Other</option>
         </select>
         <select
           value={form.variant}
@@ -151,6 +152,15 @@ function ItemForm({ initial, onSave, onCancel }: {
           ))}
         </select>
       </div>
+      {form.category === "Other" && (
+        <input
+          type="text"
+          placeholder="Enter custom category name"
+          value={form.customCategory}
+          onChange={(e) => setForm((f) => ({ ...f, customCategory: e.target.value }))}
+          className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        />
+      )}
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-foreground">
           <input
