@@ -17,7 +17,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
 
   const handleSend = () => {
     const itemsList = cartItems.map((i) => `${i.name} x${i.quantity}`).join("\n");
-    const message = `🆕 *New Order*\n\n👤 Name: ${name || "Guest"}\n🪑 Table: ${tableNumber}\n\n📋 *Items:*\n${itemsList}\n\n💰 *Total: ₹${totalPrice}*`;
+    const message = `*New Order*\n\nName: ${name || "Guest"}\nTable: ${tableNumber}\n\n*Items:*\n${itemsList}\n\n*Total: Rs.${totalPrice}*`;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, "_blank");
     onDone();

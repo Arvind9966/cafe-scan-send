@@ -13,7 +13,7 @@ const actions = [
 
 export default function QuickActions({ tableNumber }: Props) {
   const send = (msg: string) => {
-    const full = `${msg}\n🪑 Table: ${tableNumber}`;
+    const full = `${msg}\nTable: ${tableNumber}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(full)}`, "_blank");
   };
 
