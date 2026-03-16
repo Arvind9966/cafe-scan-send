@@ -72,12 +72,13 @@ interface ItemFormData {
   name: string;
   price: string;
   category: string;
+  customCategory: string;
   emoji: string;
   available: boolean;
   variant: string;
 }
 
-const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], emoji: "", available: true, variant: "" };
+const emptyForm: ItemFormData = { name: "", price: "", category: CATEGORY_OPTIONS[0], customCategory: "", emoji: "", available: true, variant: "" };
 
 function parseVariantFromName(name: string): { baseName: string; variant: string } {
   for (const opt of VARIANT_OPTIONS) {
@@ -100,8 +101,10 @@ function ItemForm({ initial, onSave, onCancel }: {
   const [form, setForm] = useState<ItemFormData>(initial || emptyForm);
 
   const handleCategoryChange = (cat: string) => {
-    setForm((f) => ({ ...f, category: cat, emoji: f.emoji || EMOJI_MAP[cat] || "🍽️" }));
+    setForm((f) => ({ ...f, category: cat, customCategory: cat === "Other" ? f.customCategory : "", emoji: f.emoji || (cat !== "Other" ? EMOJI_MAP[cat] || "🍽️" : "") }));
   };
+
+  const resolvedCategory = form.category === "Other" ? form.customCategory : form.category;
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 space-y-3">
@@ -137,6 +140,7 @@ function ItemForm({ initial, onSave, onCancel }: {
           {CATEGORY_OPTIONS.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
+          <option value="Other">Other</option>
         </select>
         <select
           value={form.variant}
@@ -148,6 +152,15 @@ function ItemForm({ initial, onSave, onCancel }: {
           ))}
         </select>
       </div>
+      {form.category === "Other" && (
+        <input
+          type="text"
+          placeholder="Enter custom category name"
+          value={form.customCategory}
+          onChange={(e) => setForm((f) => ({ ...f, customCategory: e.target.value }))}
+          className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        />
+      )}
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-foreground">
           <input
@@ -163,7 +176,7 @@ function ItemForm({ initial, onSave, onCancel }: {
             <X size={16} />
           </button>
           <button
-            onClick={() => { if (form.name && form.price) onSave(form); }}
+            onClick={() => { if (form.name && form.price && (form.category !== "Other" || form.customCategory)) onSave({ ...form, category: form.category === "Other" ? form.customCategory : form.category, customCategory: "" }); }}
             className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold flex items-center gap-1.5 active:scale-95 transition-transform"
           >
             <Save size={16} /> Save
@@ -265,7 +278,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 initial={{
                   name: parseVariantFromName(item.name).baseName,
                   price: String(item.price),
-                  category: item.category,
+                  category: CATEGORY_OPTIONS.includes(item.category) ? item.category : "Other",
+                  customCategory: CATEGORY_OPTIONS.includes(item.category) ? "" : item.category,
                   emoji: item.emoji,
                   available: item.available,
                   variant: parseVariantFromName(item.name).variant,
