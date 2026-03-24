@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, UtensilsCrossed } from "lucide-react";
+import { X } from "lucide-react";
 
 const CATEGORY_EMOJIS: Record<string, string> = {
   Combos: "🎉",
