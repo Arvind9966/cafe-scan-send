@@ -3,6 +3,7 @@ import { Send, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import type { CartItem } from "@/hooks/useCart";
 import { WHATSAPP_NUMBER } from "@/lib/menu-data";
+import { submitOrderToSheet } from "@/lib/google-form";
 
 interface Props {
   cartItems: CartItem[];
