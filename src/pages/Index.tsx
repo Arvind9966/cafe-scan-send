@@ -122,6 +122,9 @@ export default function Index() {
         ))}
       </div>
 
+      {/* Floating Category Nav */}
+      <FloatingCategoryNav categories={categories} />
+
       {/* Size Picker */}
       {sizePickerGroup && (
         <SizePicker
