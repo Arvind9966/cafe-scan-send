@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import menuIcon from "@/assets/menu-icon.jpg";
 
 const CATEGORY_EMOJIS: Record<string, string> = {
   Combos: "🎉",
