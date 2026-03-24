@@ -9,6 +9,7 @@ import CartBar from "@/components/CartBar";
 import OrderConfirmation from "@/components/OrderConfirmation";
 import QuickActions from "@/components/QuickActions";
 import SizePicker from "@/components/SizePicker";
+import FloatingCategoryNav from "@/components/FloatingCategoryNav";
 import cafeHero from "@/assets/cafe-hero.jpg";
 
 export default function Index() {
@@ -104,7 +105,7 @@ export default function Index() {
           <p className="text-center text-muted-foreground py-8">No items found</p>
         )}
         {filtered.map(({ category, items }) => (
-          <section key={category}>
+          <section key={category} id={`cat-${category}`} className="scroll-mt-4">
             <h2 className="font-display text-lg font-bold text-foreground mb-3">{category}</h2>
             <div className="space-y-2">
               {items.map((group) => (
@@ -120,6 +121,9 @@ export default function Index() {
           </section>
         ))}
       </div>
+
+      {/* Floating Category Nav */}
+      <FloatingCategoryNav categories={categories} />
 
       {/* Size Picker */}
       {sizePickerGroup && (
