@@ -70,14 +70,17 @@ export default function FloatingCategoryNav({ categories }: Props) {
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={() => setOpen((o) => !o)}
-        className="h-12 px-5 rounded-full shadow-lg flex items-center justify-center gap-2 transition-colors"
+        className="w-14 h-14 rounded-full shadow-lg flex flex-col items-center justify-center transition-colors"
         style={{ background: open ? "#333" : "#111" }}
         aria-label="Browse menu categories"
       >
         {open ? (
-          <X size={18} className="text-white" />
+          <X size={20} className="text-white" />
         ) : (
-          <span className="text-white text-sm font-semibold tracking-wide">☰ Menu</span>
+          <>
+            <span className="text-white text-[10px] leading-none">☰</span>
+            <span className="text-white text-[9px] font-semibold tracking-wide mt-0.5">Menu</span>
+          </>
         )}
       </motion.button>
     </div>
