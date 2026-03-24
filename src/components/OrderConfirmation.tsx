@@ -18,6 +18,15 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
 
   const handleSend = () => {
     const itemsList = cartItems.map((i) => `${i.name} x${i.quantity}`).join("\n");
+
+    // Silent Google Sheets submission
+    submitOrderToSheet({
+      name: name || "Guest",
+      table: tableNumber,
+      items: itemsList,
+      total: `Rs.${totalPrice}`,
+    });
+
     const message = `*New Order*\n\nName: ${name || "Guest"}\nTable: ${tableNumber}\n\n*Items:*\n${itemsList}\n\n*Total: Rs.${totalPrice}*`;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, "_blank");
