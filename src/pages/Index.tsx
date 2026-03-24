@@ -9,6 +9,7 @@ import CartBar from "@/components/CartBar";
 import OrderConfirmation from "@/components/OrderConfirmation";
 import QuickActions from "@/components/QuickActions";
 import SizePicker from "@/components/SizePicker";
+import FloatingCategoryNav from "@/components/FloatingCategoryNav";
 import cafeHero from "@/assets/cafe-hero.jpg";
 
 export default function Index() {
