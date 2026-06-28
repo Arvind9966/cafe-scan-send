@@ -193,5 +193,7 @@ export const menuItems: MenuItem[] = [
 export const WHATSAPP_NUMBER = "918387800800"; // Replace with actual number
 export const UPI_ID = "paytmqr6yxzv9@ptys"; // Replace with actual UPI ID
 export const UPI_PAYEE_NAME = "Lala Laaya Burger";
+export const UPI_MERCHANT_CODE = "5812"; // Restaurant / eating place MCC, required by many Paytm Business VPAs
+export const UPI_TRANSACTION_PREFIX = "LLB";
 
 export const categories = [...new Set(menuItems.map((item) => item.category))];
