@@ -4,6 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { CartItem } from "@/hooks/useCart";
 import { WHATSAPP_NUMBER, UPI_ID, UPI_PAYEE_NAME } from "@/lib/menu-data";
 import { submitOrderToSheet } from "@/lib/google-form";
+import gpayIcon from "@/assets/upi/gpay.png";
+import phonepeIcon from "@/assets/upi/phonepe.png";
+import paytmIcon from "@/assets/upi/paytm.png";
+import bhimIcon from "@/assets/upi/bhim.png";
+import upiIcon from "@/assets/upi/upi.png";
+
 
 interface Props {
   cartItems: CartItem[];
