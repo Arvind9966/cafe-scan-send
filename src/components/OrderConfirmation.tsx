@@ -69,16 +69,19 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
   };
 
   const buildUpiQuery = () => {
+    // Match the exact params of the Paytm QR (no amount/currency).
+    // Paytm's risk policy rejects pre-filled amounts on .ptys static-QR VPAs
+    // when launched from third-party deep links. Customer enters amount in-app,
+    // exactly like scanning the QR.
     const params = new URLSearchParams({
       pa: UPI_ID,
-      pn: UPI_PAYEE_NAME,
-      tn: `Table ${tableNumber}`,
-      am: totalPrice.toFixed(2),
-      cu: "INR",
+      pn: "Paytm",
+      tn: "Verified Paytm Merchant",
     });
 
     return params.toString();
   };
+
 
   const launchSpecificApp = (app: typeof UPI_APPS[number]) => {
     const query = buildUpiQuery();
