@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Send, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { Send, ArrowLeft, Smartphone, Wallet, Check, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { CartItem } from "@/hooks/useCart";
-import { WHATSAPP_NUMBER } from "@/lib/menu-data";
+import { WHATSAPP_NUMBER, UPI_ID, UPI_PAYEE_NAME } from "@/lib/menu-data";
 import { submitOrderToSheet } from "@/lib/google-form";
 
 interface Props {
@@ -13,24 +13,58 @@ interface Props {
   onDone: () => void;
 }
 
+type PaymentMode = "counter" | "upi";
+
 export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, onBack, onDone }: Props) {
   const [name, setName] = useState("");
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>("counter");
+  const [awaitingPaymentConfirm, setAwaitingPaymentConfirm] = useState(false);
 
-  const handleSend = () => {
+  const buildMessageAndSend = (mode: PaymentMode) => {
     const itemsList = cartItems.map((i) => `${i.name} x${i.quantity}`).join("\n");
+    const paymentLabel = mode === "upi" ? "Online (UPI)" : "Pay at Counter";
+    const timestamp = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
 
     // Silent Google Sheets submission
     submitOrderToSheet({
       name: name || "Guest",
       table: tableNumber,
-      items: itemsList,
+      items: `${itemsList}\n\nPayment Mode: ${paymentLabel}`,
       total: `Rs.${totalPrice}`,
     });
 
-    const message = `*New Order*\n\nName: ${name || "Guest"}\nTable: ${tableNumber}\n\n*Items:*\n${itemsList}\n\n*Total: Rs.${totalPrice}*`;
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, "_blank");
+    const paymentBlock =
+      mode === "upi"
+        ? `*Payment Mode:* Online (UPI)\n*Payment Status:* Customer marked as Paid\n_Please verify payment before preparing order._`
+        : `*Payment Mode:* Pay at Counter`;
+
+    const message =
+      `*New Order*\n\n` +
+      `*Customer:* ${name || "Guest"}\n` +
+      `*Table:* ${tableNumber}\n\n` +
+      `*Items:*\n${itemsList}\n\n` +
+      `*Total:* Rs.${totalPrice}\n\n` +
+      `${paymentBlock}\n\n` +
+      `*Timestamp:* ${timestamp}`;
+
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
     onDone();
+  };
+
+  const handleSend = () => {
+    if (paymentMode === "upi") {
+      // Open UPI deep link, then show "I've Made the Payment" button
+      const upiUrl =
+        `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
+        `&pn=${encodeURIComponent(UPI_PAYEE_NAME)}` +
+        `&tn=${encodeURIComponent(`Table ${tableNumber}`)}` +
+        `&am=${totalPrice}` +
+        `&cu=INR`;
+      window.location.href = upiUrl;
+      setAwaitingPaymentConfirm(true);
+    } else {
+      buildMessageAndSend("counter");
+    }
   };
 
   return (
@@ -78,17 +112,122 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
             <span className="text-lg font-bold text-primary">₹{totalPrice}</span>
           </div>
         </div>
+
+        {/* Payment Method Selection */}
+        <div>
+          <h3 className="font-semibold text-foreground mb-3">Choose Payment Method</h3>
+          <div className="space-y-3">
+            <PaymentCard
+              selected={paymentMode === "upi"}
+              onClick={() => setPaymentMode("upi")}
+              icon={<Smartphone size={22} />}
+              iconBg="bg-success/15 text-success"
+              title="Pay Online (UPI)"
+              subtitle="Pay instantly using any UPI app"
+              accent="🟢"
+            />
+            <PaymentCard
+              selected={paymentMode === "counter"}
+              onClick={() => setPaymentMode("counter")}
+              icon={<Wallet size={22} />}
+              iconBg="bg-muted text-muted-foreground"
+              title="Pay at Counter"
+              subtitle="Pay after receiving your order"
+              accent="⚪"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="p-4 border-t border-border">
-        <button
-          onClick={handleSend}
-          className="w-full bg-success text-success-foreground font-bold py-4 rounded-lg text-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
-        >
-          <Send size={22} />
-          Send Order via WhatsApp
-        </button>
+        <AnimatePresence mode="wait">
+          {!awaitingPaymentConfirm ? (
+            <motion.button
+              key="send"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={handleSend}
+              className="w-full bg-success text-success-foreground font-bold py-4 rounded-lg text-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
+            >
+              <Send size={22} />
+              Send Order via WhatsApp
+            </motion.button>
+          ) : (
+            <motion.div
+              key="paid"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-2"
+            >
+              <p className="text-center text-sm text-muted-foreground">
+                Completed your UPI payment?
+              </p>
+              <button
+                onClick={() => buildMessageAndSend("upi")}
+                className="w-full bg-success text-success-foreground font-bold py-4 rounded-lg text-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
+              >
+                <CheckCircle2 size={22} />
+                I've Made the Payment
+              </button>
+              <button
+                onClick={() => setAwaitingPaymentConfirm(false)}
+                className="w-full text-muted-foreground text-sm py-2"
+              >
+                Cancel
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
+  );
+}
+
+interface PaymentCardProps {
+  selected: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  iconBg: string;
+  title: string;
+  subtitle: string;
+  accent: string;
+}
+
+function PaymentCard({ selected, onClick, icon, iconBg, title, subtitle, accent }: PaymentCardProps) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileTap={{ scale: 0.98 }}
+      animate={{
+        borderColor: selected ? "hsl(var(--primary))" : "hsl(var(--border))",
+        backgroundColor: selected ? "hsl(var(--primary) / 0.05)" : "hsl(var(--card))",
+      }}
+      transition={{ duration: 0.2 }}
+      className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left shadow-sm"
+    >
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-foreground flex items-center gap-1.5">
+          <span className="text-xs">{accent}</span>
+          {title}
+        </p>
+        <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+      </div>
+      <motion.div
+        animate={{
+          scale: selected ? 1 : 0.8,
+          opacity: selected ? 1 : 0.3,
+        }}
+        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 border-2 ${
+          selected ? "bg-primary border-primary" : "border-border bg-transparent"
+        }`}
+      >
+        {selected && <Check size={14} className="text-primary-foreground" strokeWidth={3} />}
+      </motion.div>
+    </motion.button>
   );
 }

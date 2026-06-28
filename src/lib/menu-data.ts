@@ -191,5 +191,7 @@ export const menuItems: MenuItem[] = [
 ];
 
 export const WHATSAPP_NUMBER = "918387800800"; // Replace with actual number
+export const UPI_ID = "yourupiid@okaxis"; // Replace with actual UPI ID
+export const UPI_PAYEE_NAME = "Lala Laaya Burger";
 
 export const categories = [...new Set(menuItems.map((item) => item.category))];
