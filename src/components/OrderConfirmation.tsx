@@ -15,9 +15,20 @@ interface Props {
 
 type PaymentMode = "counter" | "upi";
 
+type UpiAppId = "any" | "gpay" | "phonepe" | "paytm" | "bhim";
+
+const UPI_APPS: { id: UpiAppId; name: string; emoji: string; scheme: string; androidPackage?: string }[] = [
+  { id: "gpay", name: "Google Pay", emoji: "🟢", scheme: "tez://upi/pay", androidPackage: "com.google.android.apps.nbu.paisa.user" },
+  { id: "phonepe", name: "PhonePe", emoji: "🟣", scheme: "phonepe://pay", androidPackage: "com.phonepe.app" },
+  { id: "paytm", name: "Paytm", emoji: "🔵", scheme: "paytmmp://pay", androidPackage: "net.one97.paytm" },
+  { id: "bhim", name: "BHIM", emoji: "🟠", scheme: "bhim://upi/pay", androidPackage: "in.org.npci.upiapp" },
+  { id: "any", name: "Other UPI App", emoji: "💳", scheme: "upi://pay" },
+];
+
 export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, onBack, onDone }: Props) {
   const [name, setName] = useState("");
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("counter");
+  const [showAppPicker, setShowAppPicker] = useState(false);
   const [awaitingPaymentConfirm, setAwaitingPaymentConfirm] = useState(false);
   const [noUpiApp, setNoUpiApp] = useState(false);
 
@@ -26,7 +37,6 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
     const paymentLabel = mode === "upi" ? "Online (UPI)" : "Pay at Counter";
     const timestamp = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
 
-    // Silent Google Sheets submission
     submitOrderToSheet({
       name: name || "Guest",
       table: tableNumber,
@@ -52,32 +62,47 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
     onDone();
   };
 
-  const launchUpiApp = () => {
-    const upiUrl =
-      `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-      `&pn=${encodeURIComponent(UPI_PAYEE_NAME)}` +
-      `&tn=${encodeURIComponent(`Table ${tableNumber}`)}` +
-      `&am=${totalPrice}` +
-      `&cu=INR`;
+  const buildUpiQuery = () =>
+    `pa=${encodeURIComponent(UPI_ID)}` +
+    `&pn=${encodeURIComponent(UPI_PAYEE_NAME)}` +
+    `&tn=${encodeURIComponent(`Table ${tableNumber}`)}` +
+    `&am=${totalPrice}` +
+    `&cu=INR`;
+
+  const launchSpecificApp = (app: typeof UPI_APPS[number]) => {
+    const query = buildUpiQuery();
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
+    let url: string;
+    if (app.id === "any" && isAndroid) {
+      // Android intent URL with no package -> forces system chooser
+      url =
+        `intent://pay?${query}#Intent;scheme=upi;` +
+        `S.browser_fallback_url=${encodeURIComponent("https://www.npci.org.in/what-we-do/upi/product-overview")};end`;
+    } else if (isAndroid && app.androidPackage && app.id !== "any") {
+      // Android intent pinned to specific package -> opens that app directly
+      url =
+        `intent://pay?${query}#Intent;scheme=upi;package=${app.androidPackage};end`;
+    } else {
+      // iOS or "any" fallback -> use app-specific scheme or generic upi://
+      url = `${app.scheme}?${query}`;
+    }
 
     setNoUpiApp(false);
+    setShowAppPicker(false);
     setAwaitingPaymentConfirm(true);
 
-    // Detect whether a UPI app handled the intent. If the tab never hides
-    // within ~1.5s, assume no UPI app is installed.
     let handled = false;
     const onHide = () => {
       if (document.hidden) handled = true;
     };
     document.addEventListener("visibilitychange", onHide);
-
     const start = Date.now();
-    window.location.href = upiUrl;
+
+    window.location.href = url;
 
     window.setTimeout(() => {
       document.removeEventListener("visibilitychange", onHide);
-      // If we're still here, still visible, and very little time elapsed,
-      // the OS likely had no handler for upi://
       if (!handled && !document.hidden && Date.now() - start < 2500) {
         setNoUpiApp(true);
       }
@@ -86,7 +111,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
 
   const handleSend = () => {
     if (paymentMode === "upi") {
-      launchUpiApp();
+      setShowAppPicker(true);
     } else {
       buildMessageAndSend("counter");
     }
@@ -94,6 +119,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
 
   const primaryLabel =
     paymentMode === "upi" ? "Pay Online via UPI" : "Send Order via WhatsApp";
+
 
   return (
     <motion.div
@@ -210,7 +236,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
               </button>
               <div className="flex gap-2">
                 <button
-                  onClick={launchUpiApp}
+                  onClick={() => { setAwaitingPaymentConfirm(false); setShowAppPicker(true); }}
                   className="flex-1 text-primary text-sm py-2 font-medium"
                 >
                   Reopen UPI App
@@ -226,6 +252,52 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
           )}
         </AnimatePresence>
       </div>
+
+      {/* UPI App Picker Bottom Sheet */}
+      <AnimatePresence>
+        {showAppPicker && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAppPicker(false)}
+              className="fixed inset-0 z-[60] bg-black/50"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 z-[61] bg-background rounded-t-3xl p-5 pb-8 shadow-2xl"
+            >
+              <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-4" />
+              <h3 className="font-display text-lg font-bold text-center mb-1">Choose UPI App</h3>
+              <p className="text-center text-sm text-muted-foreground mb-5">
+                Paying ₹{totalPrice} to {UPI_PAYEE_NAME}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {UPI_APPS.map((app) => (
+                  <button
+                    key={app.id}
+                    onClick={() => launchSpecificApp(app)}
+                    className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-border bg-card active:scale-95 active:border-primary transition-all"
+                  >
+                    <span className="text-3xl">{app.emoji}</span>
+                    <span className="text-sm font-semibold text-foreground">{app.name}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowAppPicker(false)}
+                className="w-full mt-4 py-3 text-muted-foreground text-sm font-medium"
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
