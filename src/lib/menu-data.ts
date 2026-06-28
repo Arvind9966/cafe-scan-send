@@ -13,7 +13,7 @@ export const menuItems: MenuItem[] = [
   { id: "cb3", name: "Aloo Tikki Burger + Coke", price: 59, category: "Combos", emoji: "🍔🥤" },
 
   // Rolls
-  { id: "r1", name: "Veg. Roll", price: 50, category: "Rolls", emoji: "🌯" },
+  { id: "r1", name: "Veg. Roll", price: 1, category: "Rolls", emoji: "🌯" },
   { id: "r2", name: "Chowmein Roll", price: 60, category: "Rolls", emoji: "🥡" },
   { id: "r3", name: "Aloo Tikki Roll", price: 70, category: "Rolls", emoji: "🥔" },
   { id: "r4", name: "Tandoori Roll", price: 70, category: "Rolls", emoji: "🔥" },
