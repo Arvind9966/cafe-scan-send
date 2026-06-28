@@ -289,7 +289,14 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
                     onClick={() => launchSpecificApp(app)}
                     className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-border bg-card active:scale-95 active:border-primary transition-all"
                   >
-                    <span className="text-3xl">{app.emoji}</span>
+                    <img
+                      src={app.icon}
+                      alt={app.name}
+                      className="w-12 h-12 object-contain"
+                      width={48}
+                      height={48}
+                      loading="lazy"
+                    />
                     <span className="text-sm font-semibold text-foreground">{app.name}</span>
                   </button>
                 ))}
