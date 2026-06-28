@@ -23,12 +23,12 @@ type PaymentMode = "counter" | "upi";
 
 type UpiAppId = "any" | "gpay" | "phonepe" | "paytm" | "bhim";
 
-const UPI_APPS: { id: UpiAppId; name: string; emoji: string; scheme: string; androidPackage?: string }[] = [
-  { id: "gpay", name: "Google Pay", emoji: "🟢", scheme: "tez://upi/pay", androidPackage: "com.google.android.apps.nbu.paisa.user" },
-  { id: "phonepe", name: "PhonePe", emoji: "🟣", scheme: "phonepe://pay", androidPackage: "com.phonepe.app" },
-  { id: "paytm", name: "Paytm", emoji: "🔵", scheme: "paytmmp://pay", androidPackage: "net.one97.paytm" },
-  { id: "bhim", name: "BHIM", emoji: "🟠", scheme: "bhim://upi/pay", androidPackage: "in.org.npci.upiapp" },
-  { id: "any", name: "Other UPI App", emoji: "💳", scheme: "upi://pay" },
+const UPI_APPS: { id: UpiAppId; name: string; icon: string; scheme: string; androidPackage?: string }[] = [
+  { id: "gpay", name: "Google Pay", icon: gpayIcon, scheme: "tez://upi/pay", androidPackage: "com.google.android.apps.nbu.paisa.user" },
+  { id: "phonepe", name: "PhonePe", icon: phonepeIcon, scheme: "phonepe://pay", androidPackage: "com.phonepe.app" },
+  { id: "paytm", name: "Paytm", icon: paytmIcon, scheme: "paytmmp://pay", androidPackage: "net.one97.paytm" },
+  { id: "bhim", name: "BHIM", icon: bhimIcon, scheme: "bhim://upi/pay", androidPackage: "in.org.npci.upiapp" },
+  { id: "any", name: "Other UPI App", icon: upiIcon, scheme: "upi://pay" },
 ];
 
 export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, onBack, onDone }: Props) {
