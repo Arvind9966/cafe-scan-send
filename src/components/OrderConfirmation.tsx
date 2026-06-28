@@ -236,7 +236,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
               </button>
               <div className="flex gap-2">
                 <button
-                  onClick={launchUpiApp}
+                  onClick={() => { setAwaitingPaymentConfirm(false); setShowAppPicker(true); }}
                   className="flex-1 text-primary text-sm py-2 font-medium"
                 >
                   Reopen UPI App
