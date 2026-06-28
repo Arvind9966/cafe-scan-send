@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Send, ArrowLeft, Smartphone, Wallet, Check, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { CartItem } from "@/hooks/useCart";
-import { WHATSAPP_NUMBER, UPI_ID, UPI_PAYEE_NAME, UPI_MERCHANT_CODE, UPI_TRANSACTION_PREFIX } from "@/lib/menu-data";
+import { WHATSAPP_NUMBER, UPI_ID, UPI_PAYEE_NAME } from "@/lib/menu-data";
 import { submitOrderToSheet } from "@/lib/google-form";
 import gpayIcon from "@/assets/upi/gpay.png";
 import phonepeIcon from "@/assets/upi/phonepe.png";
@@ -69,21 +69,12 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
   };
 
   const buildUpiQuery = () => {
-    const cleanTable = tableNumber.replace(/[^a-zA-Z0-9]/g, "") || "NA";
-    const reference = `${UPI_TRANSACTION_PREFIX}${cleanTable}${Date.now()}`;
-    const note = `Table ${tableNumber}`;
-
     const params = new URLSearchParams({
       pa: UPI_ID,
       pn: UPI_PAYEE_NAME,
-      mc: UPI_MERCHANT_CODE,
-      tid: reference,
-      tr: reference,
-      tn: note,
+      tn: `Table ${tableNumber}`,
       am: totalPrice.toFixed(2),
       cu: "INR",
-      mode: "02",
-      purpose: "00",
     });
 
     return params.toString();
