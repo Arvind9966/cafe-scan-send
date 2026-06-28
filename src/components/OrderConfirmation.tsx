@@ -252,6 +252,52 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
           )}
         </AnimatePresence>
       </div>
+
+      {/* UPI App Picker Bottom Sheet */}
+      <AnimatePresence>
+        {showAppPicker && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAppPicker(false)}
+              className="fixed inset-0 z-[60] bg-black/50"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 z-[61] bg-background rounded-t-3xl p-5 pb-8 shadow-2xl"
+            >
+              <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-4" />
+              <h3 className="font-display text-lg font-bold text-center mb-1">Choose UPI App</h3>
+              <p className="text-center text-sm text-muted-foreground mb-5">
+                Paying ₹{totalPrice} to {UPI_PAYEE_NAME}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {UPI_APPS.map((app) => (
+                  <button
+                    key={app.id}
+                    onClick={() => launchSpecificApp(app)}
+                    className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-border bg-card active:scale-95 active:border-primary transition-all"
+                  >
+                    <span className="text-3xl">{app.emoji}</span>
+                    <span className="text-sm font-semibold text-foreground">{app.name}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowAppPicker(false)}
+                className="w-full mt-4 py-3 text-muted-foreground text-sm font-medium"
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
