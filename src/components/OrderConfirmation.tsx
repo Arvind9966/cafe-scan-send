@@ -69,16 +69,19 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
   };
 
   const buildUpiQuery = () => {
+    // Match the exact params of the Paytm QR (no amount/currency).
+    // Paytm's risk policy rejects pre-filled amounts on .ptys static-QR VPAs
+    // when launched from third-party deep links. Customer enters amount in-app,
+    // exactly like scanning the QR.
     const params = new URLSearchParams({
       pa: UPI_ID,
-      pn: UPI_PAYEE_NAME,
-      tn: `Table ${tableNumber}`,
-      am: totalPrice.toFixed(2),
-      cu: "INR",
+      pn: "Paytm",
+      tn: "Verified Paytm Merchant",
     });
 
     return params.toString();
   };
+
 
   const launchSpecificApp = (app: typeof UPI_APPS[number]) => {
     const query = buildUpiQuery();
@@ -284,9 +287,13 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
             >
               <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-4" />
               <h3 className="font-display text-lg font-bold text-center mb-1">Choose UPI App</h3>
-              <p className="text-center text-sm text-muted-foreground mb-5">
-                Paying ₹{totalPrice} to {UPI_PAYEE_NAME}
+              <p className="text-center text-sm text-muted-foreground mb-2">
+                Paying <span className="font-bold text-foreground">₹{totalPrice}</span> to {UPI_PAYEE_NAME}
               </p>
+              <p className="text-center text-xs text-amber-600 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-2 mb-5">
+                ⚠️ Please enter the amount <b>₹{totalPrice}</b> manually in your UPI app
+              </p>
+
               <div className="grid grid-cols-2 gap-3">
                 {UPI_APPS.map((app) => (
                   <button
