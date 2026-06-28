@@ -4,6 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { CartItem } from "@/hooks/useCart";
 import { WHATSAPP_NUMBER, UPI_ID, UPI_PAYEE_NAME } from "@/lib/menu-data";
 import { submitOrderToSheet } from "@/lib/google-form";
+import gpayIcon from "@/assets/upi/gpay.png";
+import phonepeIcon from "@/assets/upi/phonepe.png";
+import paytmIcon from "@/assets/upi/paytm.png";
+import bhimIcon from "@/assets/upi/bhim.png";
+import upiIcon from "@/assets/upi/upi.png";
+
 
 interface Props {
   cartItems: CartItem[];
@@ -17,12 +23,12 @@ type PaymentMode = "counter" | "upi";
 
 type UpiAppId = "any" | "gpay" | "phonepe" | "paytm" | "bhim";
 
-const UPI_APPS: { id: UpiAppId; name: string; emoji: string; scheme: string; androidPackage?: string }[] = [
-  { id: "gpay", name: "Google Pay", emoji: "🟢", scheme: "tez://upi/pay", androidPackage: "com.google.android.apps.nbu.paisa.user" },
-  { id: "phonepe", name: "PhonePe", emoji: "🟣", scheme: "phonepe://pay", androidPackage: "com.phonepe.app" },
-  { id: "paytm", name: "Paytm", emoji: "🔵", scheme: "paytmmp://pay", androidPackage: "net.one97.paytm" },
-  { id: "bhim", name: "BHIM", emoji: "🟠", scheme: "bhim://upi/pay", androidPackage: "in.org.npci.upiapp" },
-  { id: "any", name: "Other UPI App", emoji: "💳", scheme: "upi://pay" },
+const UPI_APPS: { id: UpiAppId; name: string; icon: string; scheme: string; androidPackage?: string }[] = [
+  { id: "gpay", name: "Google Pay", icon: gpayIcon, scheme: "tez://upi/pay", androidPackage: "com.google.android.apps.nbu.paisa.user" },
+  { id: "phonepe", name: "PhonePe", icon: phonepeIcon, scheme: "phonepe://pay", androidPackage: "com.phonepe.app" },
+  { id: "paytm", name: "Paytm", icon: paytmIcon, scheme: "paytmmp://pay", androidPackage: "net.one97.paytm" },
+  { id: "bhim", name: "BHIM", icon: bhimIcon, scheme: "bhim://upi/pay", androidPackage: "in.org.npci.upiapp" },
+  { id: "any", name: "Other UPI App", icon: upiIcon, scheme: "upi://pay" },
 ];
 
 export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, onBack, onDone }: Props) {
@@ -283,7 +289,14 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
                     onClick={() => launchSpecificApp(app)}
                     className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-border bg-card active:scale-95 active:border-primary transition-all"
                   >
-                    <span className="text-3xl">{app.emoji}</span>
+                    <img
+                      src={app.icon}
+                      alt={app.name}
+                      className="w-12 h-12 object-contain"
+                      width={48}
+                      height={48}
+                      loading="lazy"
+                    />
                     <span className="text-sm font-semibold text-foreground">{app.name}</span>
                   </button>
                 ))}
