@@ -19,6 +19,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
   const [name, setName] = useState("");
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("counter");
   const [awaitingPaymentConfirm, setAwaitingPaymentConfirm] = useState(false);
+  const [noUpiApp, setNoUpiApp] = useState(false);
 
   const buildMessageAndSend = (mode: PaymentMode) => {
     const itemsList = cartItems.map((i) => `${i.name} x${i.quantity}`).join("\n");
@@ -51,21 +52,48 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
     onDone();
   };
 
+  const launchUpiApp = () => {
+    const upiUrl =
+      `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
+      `&pn=${encodeURIComponent(UPI_PAYEE_NAME)}` +
+      `&tn=${encodeURIComponent(`Table ${tableNumber}`)}` +
+      `&am=${totalPrice}` +
+      `&cu=INR`;
+
+    setNoUpiApp(false);
+    setAwaitingPaymentConfirm(true);
+
+    // Detect whether a UPI app handled the intent. If the tab never hides
+    // within ~1.5s, assume no UPI app is installed.
+    let handled = false;
+    const onHide = () => {
+      if (document.hidden) handled = true;
+    };
+    document.addEventListener("visibilitychange", onHide);
+
+    const start = Date.now();
+    window.location.href = upiUrl;
+
+    window.setTimeout(() => {
+      document.removeEventListener("visibilitychange", onHide);
+      // If we're still here, still visible, and very little time elapsed,
+      // the OS likely had no handler for upi://
+      if (!handled && !document.hidden && Date.now() - start < 2500) {
+        setNoUpiApp(true);
+      }
+    }, 1500);
+  };
+
   const handleSend = () => {
     if (paymentMode === "upi") {
-      // Open UPI deep link, then show "I've Made the Payment" button
-      const upiUrl =
-        `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-        `&pn=${encodeURIComponent(UPI_PAYEE_NAME)}` +
-        `&tn=${encodeURIComponent(`Table ${tableNumber}`)}` +
-        `&am=${totalPrice}` +
-        `&cu=INR`;
-      window.location.href = upiUrl;
-      setAwaitingPaymentConfirm(true);
+      launchUpiApp();
     } else {
       buildMessageAndSend("counter");
     }
   };
+
+  const primaryLabel =
+    paymentMode === "upi" ? "Pay Online via UPI" : "Send Order via WhatsApp";
 
   return (
     <motion.div
@@ -119,16 +147,16 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
           <div className="space-y-3">
             <PaymentCard
               selected={paymentMode === "upi"}
-              onClick={() => setPaymentMode("upi")}
+              onClick={() => { setPaymentMode("upi"); setNoUpiApp(false); setAwaitingPaymentConfirm(false); }}
               icon={<Smartphone size={22} />}
               iconBg="bg-success/15 text-success"
               title="Pay Online (UPI)"
-              subtitle="Pay instantly using any UPI app"
+              subtitle="Opens your installed UPI app (GPay, PhonePe, Paytm…)"
               accent="🟢"
             />
             <PaymentCard
               selected={paymentMode === "counter"}
-              onClick={() => setPaymentMode("counter")}
+              onClick={() => { setPaymentMode("counter"); setNoUpiApp(false); setAwaitingPaymentConfirm(false); }}
               icon={<Wallet size={22} />}
               iconBg="bg-muted text-muted-foreground"
               title="Pay at Counter"
@@ -136,6 +164,16 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
               accent="⚪"
             />
           </div>
+
+          {noUpiApp && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-3 p-3 rounded-lg border border-destructive/30 bg-destructive/10 text-sm text-destructive"
+            >
+              No UPI application was found on this device. Please choose "Pay at Counter" or install a UPI app and try again.
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -150,8 +188,8 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
               onClick={handleSend}
               className="w-full bg-success text-success-foreground font-bold py-4 rounded-lg text-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
             >
-              <Send size={22} />
-              Send Order via WhatsApp
+              {paymentMode === "upi" ? <Smartphone size={22} /> : <Send size={22} />}
+              {primaryLabel}
             </motion.button>
           ) : (
             <motion.div
@@ -161,21 +199,29 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
               className="space-y-2"
             >
               <p className="text-center text-sm text-muted-foreground">
-                Completed your UPI payment?
+                Once your UPI payment is complete, tap below to send your order.
               </p>
               <button
                 onClick={() => buildMessageAndSend("upi")}
                 className="w-full bg-success text-success-foreground font-bold py-4 rounded-lg text-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
               >
                 <CheckCircle2 size={22} />
-                I've Made the Payment
+                Continue to Send Order
               </button>
-              <button
-                onClick={() => setAwaitingPaymentConfirm(false)}
-                className="w-full text-muted-foreground text-sm py-2"
-              >
-                Cancel
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={launchUpiApp}
+                  className="flex-1 text-primary text-sm py-2 font-medium"
+                >
+                  Reopen UPI App
+                </button>
+                <button
+                  onClick={() => { setAwaitingPaymentConfirm(false); setNoUpiApp(false); }}
+                  className="flex-1 text-muted-foreground text-sm py-2"
+                >
+                  Cancel
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
