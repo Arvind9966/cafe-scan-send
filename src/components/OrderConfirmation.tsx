@@ -76,7 +76,7 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
     const params = new URLSearchParams({
       pa: UPI_ID,
       pn: "Paytm",
-      tn: "Verified Paytm Merchant",
+      tn: "Verified Paytm Account",
     });
 
     return params.toString();
