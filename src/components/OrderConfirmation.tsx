@@ -125,7 +125,25 @@ export default function OrderConfirmation({ cartItems, totalPrice, tableNumber, 
 
   const handleSend = () => {
     if (paymentMode === "upi") {
-      setShowAppPicker(true);
+      const url = `upi://pay?${buildUpiQuery()}`;
+      setNoUpiApp(false);
+      setAwaitingPaymentConfirm(true);
+
+      let handled = false;
+      const onHide = () => {
+        if (document.hidden) handled = true;
+      };
+      document.addEventListener("visibilitychange", onHide);
+      const start = Date.now();
+
+      window.location.href = url;
+
+      window.setTimeout(() => {
+        document.removeEventListener("visibilitychange", onHide);
+        if (!handled && !document.hidden && Date.now() - start < 2500) {
+          setNoUpiApp(true);
+        }
+      }, 1500);
     } else {
       buildMessageAndSend("counter");
     }
