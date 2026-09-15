@@ -190,7 +190,7 @@ export const menuItems: MenuItem[] = [
   { id: "sp4", name: "Hot Coffee", price: 30, category: "Specials", emoji: "☕" },
 ];
 
-export const WHATSAPP_NUMBER = "918387800800"; // Replace with actual number
+export const WHATSAPP_NUMBER = "919887023379"; // Replace with actual number
 export const UPI_ID = "paytmqr6yxzv9@ptys"; // Replace with actual UPI ID
 export const UPI_PAYEE_NAME = "Lala Laaya Burger";
 
